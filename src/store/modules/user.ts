@@ -1,88 +1,47 @@
-//创建用户相关的小仓库 
+//创建用户相关的小仓库
 import { defineStore } from 'pinia'
 //引入接口
 import { reqLogin, reqUserInfo, reqLogout } from '@/api/user'
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-import type { loginFormData, loginResponseData, useInfoReponseData } from "@/api/user/type";
->>>>>>> 0cc4b7a (定义接口类型)
->>>>>>> 16dc8e3 (定义接口数据类型)
-=======
->>>>>>> cd5d6a41c317693c78360ac39368762d8110234b
-import { UserState } from './types/type'
-//引入操作本地存储的工具方法
+import type { loginFormData, loginResponseData, useInfoReponseData } from '@/api/user/type'
+import type { UserState } from './types/type'
+//引入操作本地存储的工具
 import { SET_TOKEN, GET_TOKEN, REMOVE_TOKEN } from '@/utils/token'
 //引入路由(常量路由)
 import { constantRoute } from '@/router/routes'
 //创建小仓库
-let useUserStore = defineStore('User', {
-    //小仓库存储数据地方
+const useUserStore = defineStore('User', {
+    //小仓库存储数据
     state: (): UserState => {
         return {
             token: GET_TOKEN(),//用户唯一标识token
-            menuRoutes: constantRoute, //仓库存储生成菜单需要数组(路由)
+            menuRoutes: constantRoute,//仓库存储生成菜单需要的数组(路由)
             username: '',
-            avatar: ''
+            avatar: '',
         }
     },
     //异步|逻辑的地方
     actions: {
         //用户登录的方法
-<<<<<<< HEAD
-<<<<<<< HEAD
-        async userLogin(data: any) {
-            //登录请求
-            let result: any = await reqLogin(data);
-=======
-<<<<<<< HEAD
-        async userLogin(data: any) {
-            //登录请求
-            let result: any = await reqLogin(data);
-=======
         async userLogin(data: loginFormData) {
             //登录请求
-            let result: loginResponseData = await reqLogin(data);
->>>>>>> 0cc4b7a (定义接口类型)
->>>>>>> 16dc8e3 (定义接口数据类型)
-=======
-        async userLogin(data: any) {
-            //登录请求
-            let result: any = await reqLogin(data);
->>>>>>> cd5d6a41c317693c78360ac39368762d8110234b
-            //登录请求：成功200->token
-            //登录请求：失败201->登陆失败错误的信息
+            const result: loginResponseData = await reqLogin(data)
+            //登录请求:成功200->token
+            //登录请求:失败201->登录失败错误的信息
             if (result.code == 200) {
-                //pinia仓库存储token
+                //pinia仓库存储一下token
                 //由于pinia|vuex存储数据其实利用js对象
-                this.token = (result.data as string)
-
+                this.token = result.data as string
                 //本地存储持久化存储一份
-                SET_TOKEN((result.data as string))
+                SET_TOKEN(result.data as string)
                 //能保证当前async函数返回一个成功的promise
                 return 'ok'
             } else {
                 return Promise.reject(new Error(result.data))
             }
         },
-        //获取用户信息方法
+        //获取数据信息方法
         async userInfo() {
-            //获取用户的信息进行存储仓库当中[用户头像，名字]
-<<<<<<< HEAD
-<<<<<<< HEAD
-            let result = await reqUserInfo()
-=======
-<<<<<<< HEAD
-            let result = await reqUserInfo()
-=======
-            let result: useInfoReponseData = await reqUserInfo()
->>>>>>> 0cc4b7a (定义接口类型)
->>>>>>> 16dc8e3 (定义接口数据类型)
-=======
-            let result = await reqUserInfo()
->>>>>>> cd5d6a41c317693c78360ac39368762d8110234b
+            const result: useInfoReponseData = await reqUserInfo()
             //如果获取用户信息成功，存储一下用户信息
             if (result.code == 200) {
                 this.username = result.data.name
@@ -93,36 +52,22 @@ let useUserStore = defineStore('User', {
             }
         },
         //退出登录
-        async Logout() {
+        async userLogout() {
             //退出登录请求
-<<<<<<< HEAD
-<<<<<<< HEAD
-            let result = await reqLogout()
-=======
-<<<<<<< HEAD
-            let result = await reqLogout()
-=======
-            let result: any = await reqLogout()
->>>>>>> 0cc4b7a (定义接口类型)
->>>>>>> 16dc8e3 (定义接口数据类型)
-=======
-            let result = await reqLogout()
->>>>>>> cd5d6a41c317693c78360ac39368762d8110234b
+            const result: any = await reqLogout()
             if (result.code == 200) {
-                this.token = ""
-                this.username = ""
-                this.avatar = ""
+                //目前没有mock接口:退出登录接口(通知服务器本地用户唯一标识失效)
+                this.token = ''
+                this.username = ''
+                this.avatar = ''
                 REMOVE_TOKEN()
-                return 'ok' //让组件判断退出成功还是失败，成功返回成功的promise
+                return 'ok'
             } else {
                 return Promise.reject(new Error(result.message))
             }
-        }
-
+        },
     },
-    getters: {
-
-    }
+    getters: {},
 })
-//对外暴露获取小仓库方法
+//对外暴露小仓库
 export default useUserStore

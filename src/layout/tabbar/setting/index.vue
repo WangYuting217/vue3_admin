@@ -52,7 +52,7 @@ const logout = async () => {
     //第一：向服务器发请求[退出登录接口]   不需要做
     //第二：仓库关于用户相关的数据清空[token|username|avatar]
     //第三：跳转到登陆页面
-    await useStore.Logout()
+    await useStore.userLogout()
     //跳转到登陆页面
     router.push({ path: '/login', query: { redirect: route.path } })
 }

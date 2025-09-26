@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-//登录接口需要携带参数ts类型
-=======
-<<<<<<< HEAD
-//登录接口需要携带参数ts类型
-=======
 //用户相关的数据的ts类型
 //用户登录接口携带参数的ts类型
 export interface loginFormData {
@@ -34,9 +27,3 @@ export interface useInfoReponseData extends ResponseData {
         avatar: string
     }
 }
-
->>>>>>> 0cc4b7a (定义接口类型)
->>>>>>> 16dc8e3 (定义接口数据类型)
-=======
-//登录接口需要携带参数ts类型
->>>>>>> cd5d6a41c317693c78360ac39368762d8110234b
