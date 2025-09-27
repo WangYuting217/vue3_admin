@@ -56,7 +56,6 @@ const useUserStore = defineStore('User', {
             //退出登录请求
             const result: any = await reqLogout()
             if (result.code == 200) {
-                //目前没有mock接口:退出登录接口(通知服务器本地用户唯一标识失效)
                 this.token = ''
                 this.username = ''
                 this.avatar = ''

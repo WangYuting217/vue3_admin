@@ -93,7 +93,7 @@ export default {
     top: $base-tabbar-height;
     padding: 20px;
     overflow: auto;
-    background-color: aqua;
+    background-color: white;
     transition: all 0.3s;
 
     &.fold {
