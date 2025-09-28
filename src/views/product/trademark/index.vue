@@ -36,8 +36,9 @@
                 :page-sizes 下拉菜单数据
                 :background 分页器按钮背景色
                 layout 分页器六个子组件的布局调整-->
-        <el-pagination v-model:current-page="page" v-model:page-size="limit" :page-sizes="[3, 5, 7, 9]"
-            :background="true" layout="prev, pager, next, jumper,->,sizes,total " :total="total" />
+        <el-pagination @current-change="getHasTrademark" @size-change="sizeChange" v-model:current-page="page"
+            v-model:page-size="limit" :page-sizes="[3, 5, 7, 9]" :background="true"
+            layout="prev, pager, next, jumper,->,sizes,total " :total="total" />
     </el-card>
 </template>
 
@@ -54,18 +55,32 @@ let total = ref<number>(0)
 //存储已有品牌数据
 let trademarkArr = ref<Records>([])
 //获取已有品牌的接口封装为一个函数：在任何情况下使用数据，调用函数即可
-const getHasTrademark = async () => {
+const getHasTrademark = async (pager = 1) => {
+    page.value = pager
     let result: TradeMarkRespinseData = await reqHasTrademark(page.value, limit.value)
     if (result.code == 200) {
         //存储已有品牌的总个数
         total.value = result.data.total
         trademarkArr.value = result.data.records
+        console.log(result.data.total)
     }
 }
 //组件挂载完毕--发一次请求，获取品牌数据
 onMounted(() => {
     getHasTrademark()
 })
+
+//分页器当前页码发生变化时触发
+//对于当前页码发生变化自定义事件时，组件pagination父组件回传了数据(当前的页码)
+//const changePages = () => {
+//当页码发生变化时再次发请求获取对应已有品牌数据战术
+//getHasTrademark()
+//}
+const sizeChange = () => {
+    //当前每一页的数据量发生变化时，当前页码归1
+    //page.value = 1
+    getHasTrademark()
+}
 </script>
 
 <style scoped></style>
