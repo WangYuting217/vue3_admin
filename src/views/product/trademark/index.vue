@@ -72,7 +72,7 @@
 
 <script setup lang='ts'>
 import { ref, onMounted, reactive } from 'vue';
-import { reqHasTrademark } from '@/api/product/trademark';
+import { reqAddOrUpdateTrademark, reqHasTrademark } from '@/api/product/trademark';
 import type { Records, TradeMarkRespinseData, TradeMark } from '@/api/product/trademark/type';
 import { ElMessage, type UploadProps } from 'element-plus'
 //当前页码
@@ -122,6 +122,9 @@ const sizeChange = () => {
 const addTrademark = () => {
     //对话框显示
     dialogFormVisible.value = true
+    //清空收集数据
+    trademarkParams.tmName = ''
+    trademarkParams.logoUrl = ''
 }
 //修改品牌按钮时回调
 const updateTrademark = () => {
@@ -134,9 +137,29 @@ const cancel = () => {
     dialogFormVisible.value = false
 }
 //对话框确认按钮
-const confirm = () => {
-    //对话框隐藏
-    dialogFormVisible.value = false
+const confirm = async () => {
+    let result: any = await reqAddOrUpdateTrademark(trademarkParams)
+    //添加品牌成功
+    if (result.code == 200) {
+        //关闭对话框
+        dialogFormVisible.value = false
+        //弹出提交成功的提示信息
+        ElMessage({
+            type: 'success',
+            message: '添加品牌成功'
+        })
+        //再次发请求获取已有全部的品牌数据
+        getHasTrademark()
+    } else {
+        //添加品牌失败
+        //关闭对话框
+        dialogFormVisible.value = false
+        //弹出提交成功的提示信息
+        ElMessage({
+            type: 'error',
+            message: '添加品牌失败'
+        })
+    }
 }
 
 //上传图片组件->上传图片之前触发的钩子函数
@@ -166,6 +189,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => 
     //response:即为当前这次上传图片post请求服务器返回的数据
     //收集上传图片的地址，添加一个新的品牌时候带给服务器
     trademarkParams.logoUrl = response.data
+    console.log(response.data)
 }
 </script>
 

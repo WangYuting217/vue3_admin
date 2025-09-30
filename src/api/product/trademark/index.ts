@@ -22,6 +22,6 @@ export const reqAddOrUpdateTrademark = (data: TradeMark) => {
         return request.put<any, any>(API.UPDATETRADEMARK_URL, data)
     } else {
         //新增品牌
-        return request.post<any, any>(API.ADDTRADEMARK_URL, data)
+        return request.put<any, any>(API.ADDTRADEMARK_URL, data)
     }
 }
