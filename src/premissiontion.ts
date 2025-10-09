@@ -24,7 +24,7 @@ router.beforeEach(async (to, from, next) => {
     let username = userStore.username
     if (token) {
         //用户登录成功,访问login不能访问，指向首页
-        if (to.path == '/logon') {
+        if (to.path == '/login') {
             next({ path: '/' })
         } else {
             //登陆成功其余六个路由(登录排除)
@@ -41,7 +41,7 @@ router.beforeEach(async (to, from, next) => {
                     //token过期：获取不到用户信息
                     //用户手动修改本地存储token
                     //退出登录->把用户相关的信息数据清空
-                    await userStore.Logout()
+                    await userStore.userLogout()
                     next({ path: '/', query: { redirect: to.path } })//过期后保留页面，下次登录可直接到本页面
                 }
             }

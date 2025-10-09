@@ -25,7 +25,7 @@
                 </el-table-column>
                 <el-table-column label="品牌操作">
                     <template #="{ row, $index }">
-                        <el-button type="primary" size="small" icon="Edit" @click="updateTrademark"></el-button>
+                        <el-button type="primary" size="small" icon="Edit" @click="updateTrademark(row)"></el-button>
                         <el-button type="primary" size="small" icon="Delete"></el-button>
                     </template>
                 </el-table-column>
@@ -44,7 +44,7 @@
         <!--dialog对话框组件：添加品牌和修改已有品牌的时候
                 v-model:用户控制对话框的显示与隐藏  true显示 false隐藏
                 title:对话框左上角标题-->
-        <el-dialog v-model="dialogFormVisible" title="添加品牌">
+        <el-dialog v-model="dialogFormVisible" :title="trademarkParams.id?'修改品牌':'添加品牌'">
             <el-form style="width: 80%;">
                 <el-form-item label="品牌名称" label-width="80px">
                     <el-input placeholder="请您输入品牌名称" v-model="trademarkParams.tmName"></el-input>
@@ -98,7 +98,6 @@ const getHasTrademark = async (pager = 1) => {
         //存储已有品牌的总个数
         total.value = result.data.total
         trademarkArr.value = result.data.records
-        console.log(result.data.total)
     }
 }
 //组件挂载完毕--发一次请求，获取品牌数据
@@ -123,13 +122,19 @@ const addTrademark = () => {
     //对话框显示
     dialogFormVisible.value = true
     //清空收集数据
+    trademarkParams.id = 0 //id得清空，以防用户上一步点击的修改，对话框题目还显示修品牌
     trademarkParams.tmName = ''
     trademarkParams.logoUrl = ''
 }
 //修改品牌按钮时回调
-const updateTrademark = () => {
+//row：当前已有的品牌
+const updateTrademark = (row:TradeMark) => {
     //对话框显示
     dialogFormVisible.value = true
+
+    //展示已有品牌的数据
+    //ES6合并对象代替后面三行代码trademarkParams.tmName/logoUrl/id = row.tmName/logoUrl/id
+    Object.assign(trademarkParams,row)
 }
 //对话框取消按钮
 const cancel = () => {
@@ -139,17 +144,17 @@ const cancel = () => {
 //对话框确认按钮
 const confirm = async () => {
     let result: any = await reqAddOrUpdateTrademark(trademarkParams)
-    //添加品牌成功
+    //添加|修改品牌品牌成功
     if (result.code == 200) {
         //关闭对话框
         dialogFormVisible.value = false
         //弹出提交成功的提示信息
         ElMessage({
             type: 'success',
-            message: '添加品牌成功'
+            message: trademarkParams.id?'修改品牌成功':'添加品牌成功'
         })
         //再次发请求获取已有全部的品牌数据
-        getHasTrademark()
+        getHasTrademark(trademarkParams.id?page.value:1)
     } else {
         //添加品牌失败
         //关闭对话框
@@ -157,7 +162,7 @@ const confirm = async () => {
         //弹出提交成功的提示信息
         ElMessage({
             type: 'error',
-            message: '添加品牌失败'
+            message: trademarkParams.id?'修改品牌失败':'添加品牌失败'
         })
     }
 }
@@ -189,7 +194,6 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => 
     //response:即为当前这次上传图片post请求服务器返回的数据
     //收集上传图片的地址，添加一个新的品牌时候带给服务器
     trademarkParams.logoUrl = response.data
-    console.log(response.data)
 }
 </script>
 
