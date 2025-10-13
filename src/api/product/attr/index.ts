@@ -13,6 +13,6 @@ enum API {
 //一级分类接口方法
 export const reqC1 = () => request.get<any, CategoryResponseData>(API.C1_URL)
 //二级分类接口方法
-export const reqC2 = (category1ID: number) => request.get<any, CategoryResponseData>(API.C2_URL + category1ID)
+export const reqC2 = (category1ID: number | string) => request.get<any, CategoryResponseData>(API.C2_URL + category1ID)
 //三级分类接口方法
-export const reqC3 = (category2ID: number) => request.get<any, CategoryResponseData>(API.C3_url + category2ID)
+export const reqC3 = (category2ID: number | string) => request.get<any, CategoryResponseData>(API.C3_url + category2ID)
