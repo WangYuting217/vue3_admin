@@ -41,6 +41,7 @@ onMounted(() => {
 const getC1 = () => {
     categoryStore.getC1()
 }
+
 </script>
 
 <style scoped></style>
