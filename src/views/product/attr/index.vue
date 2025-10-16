@@ -1,7 +1,7 @@
 <template>
     <div>
         <!--三级分类全局组件-->
-        <Category :scene="scene"/>
+        <Category :scene="scene" />
         <el-card style="margin: 10px 0px;">
             <div v-show="scene == 0">
                 <el-button @click="switchAttr" type="primary" size="default" icon="Plus"
@@ -47,7 +47,7 @@
 
 <script setup lang='ts'>
 //组合式API函数watch
-import { watch, ref } from 'vue';
+import { watch, ref, reactive } from 'vue';
 //引入已有属性和属性值接口
 import { reqAttr, reqC3 } from '@/api/product/attr';
 
@@ -59,6 +59,14 @@ let categoryStore = useCategoryStore()
 let attrArr = ref<Attr[]>([])
 //卡片card组件内容切换变量
 let scene = ref<number>(0)
+//收集新增的属性数据
+let attrParams = reactive<Attr>({
+    attrName: '',//新增属性名字
+    attrValueList: [],//新增属性值数组
+    categoryId: '',//三级分类ID
+    categoryLevel: 3,//三级分类
+})
+//监听仓库三级分类ID是否发生变化
 watch(() => categoryStore.c3Id, () => {
     //清空上一次属性属性值
     attrArr.value = []
