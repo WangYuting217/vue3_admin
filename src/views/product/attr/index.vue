@@ -32,7 +32,7 @@
                     </el-form-item>
                 </el-form>
                 <el-button :disabled="attrParams.attrName ? false : true" type="primary" size="default" icon="Plus"
-                    @click="addAttrValue">添加属性值</el-button>
+                    @click="addAttrValue()">添加属性值</el-button>
                 <el-button type="primary" size="default" @click="cancel">取消</el-button>
                 <el-table style="margin: 10px 0px;" border :data="attrParams.attrValueList">
                     <el-table-column label="序号" width="80px" type="index" align="center">
@@ -40,12 +40,16 @@
                     <el-table-column label="属性值名称">
                         <!--row为当前属性值对象-->
                         <template #="{ row, $index }">
-                            <el-input v-if="row.flag" @blur="toLook(row, $index)" size="small" placeholder="请你输入属性值名称"
-                                v-model="row.valueName"></el-input>
-                            <div v-else @click="toEdit(row)">{{ row.valueName }}</div>
+                            <el-input :ref="(vc: any) => { inputArr[$index] = vc }" v-if="row.flag" @blur="toLook(row, $index)"
+                                size="small" placeholder="请你输入属性值名称" v-model="row.valueName"></el-input>
+                            <div v-else @click="toEdit(row, $index)">{{ row.valueName }}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="属性值操作"></el-table-column>
+                    <el-table-column label="属性值操作">
+                        <template #="{row,index}">
+                            <el-button type="danger" size="small" icon="Delete" @click="attrParams.attrValueList.splice(index,1)"></el-button>
+                        </template>
+                    </el-table-column>
                 </el-table>
                 <el-button type="primary" size="default" @click="save"
                     :disabled="attrParams.attrValueList.length > 0 ? false : true">保存</el-button>
@@ -57,7 +61,7 @@
 
 <script setup lang='ts'>
 //组合式API函数watch
-import { watch, ref, reactive } from 'vue';
+import { watch, ref, reactive, nextTick } from 'vue';
 //引入已有属性和属性值接口
 import { reqAttr, reqAddOrUpdateAttr } from '@/api/product/attr';
 
@@ -79,6 +83,8 @@ let attrParams = reactive<Attr>({
 })
 //动态响应编辑模式和展示模式
 let flag = ref<boolean>(true)
+//动态响应ref数据
+let inputArr = ref<any>([])
 //监听仓库三级分类ID是否发生变化
 watch(() => categoryStore.c3Id, () => {
     //清空上一次属性属性值
@@ -120,6 +126,10 @@ const addAttrValue = () => {
     attrParams.attrValueList.push({
         valueName: '',
         flag: true //控制每一个属性值的编辑模式和展示模式
+    })
+    //获取最后el-input组件焦点
+    nextTick(() => {
+        inputArr.value[attrParams.attrValueList.length - 1].focus()
     })
 }
 //保存按钮的回调
@@ -176,8 +186,12 @@ const toLook = (row: AttrValue, $index: number) => {
     row.flag = false
 }
 //展示模式点击变回编辑模式
-const toEdit = (row: AttrValue) => {
+const toEdit = (row: AttrValue, $index: number) => {
     row.flag = true
+    //响应式数据发生变化，获取更新的DOM(组件实例)
+    nextTick(() => {
+        inputArr.value[$index].focus()
+    })
 }
 </script>
 
