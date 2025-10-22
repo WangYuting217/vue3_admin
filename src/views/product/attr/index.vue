@@ -18,7 +18,7 @@
                     <el-table-column label="操作" width="120px">
                         <!--row:已有的属性对象-->
                         <template #="{ row, $index }">
-                            <el-button type="primary" size="small" icon="Edit" @click="addAttr"></el-button>
+                            <el-button type="primary" size="small" icon="Edit" @click="upDataAttr(row)"></el-button>
                             <el-button type="primary" size="small" icon="Delete"></el-button>
                         </template>
                     </el-table-column>
@@ -40,14 +40,16 @@
                     <el-table-column label="属性值名称">
                         <!--row为当前属性值对象-->
                         <template #="{ row, $index }">
-                            <el-input :ref="(vc: any) => { inputArr[$index] = vc }" v-if="row.flag" @blur="toLook(row, $index)"
-                                size="small" placeholder="请你输入属性值名称" v-model="row.valueName"></el-input>
+                            <el-input :ref="(vc: any) => inputArr[$index] = vc" v-if="row.flag"
+                                @blur="toLook(row, $index)" size="small" placeholder="请你输入属性值名称"
+                                v-model="row.valueName"></el-input>
                             <div v-else @click="toEdit(row, $index)">{{ row.valueName }}</div>
                         </template>
                     </el-table-column>
                     <el-table-column label="属性值操作">
-                        <template #="{row,index}">
-                            <el-button type="danger" size="small" icon="Delete" @click="attrParams.attrValueList.splice(index,1)"></el-button>
+                        <template #="{ row, index }">
+                            <el-button type="danger" size="small" icon="Delete"
+                                @click="attrParams.attrValueList.splice(index, 1)"></el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -73,7 +75,7 @@ let categoryStore = useCategoryStore()
 //存储已有的属性和属性值
 let attrArr = ref<Attr[]>([])
 //动态响应卡片card组件内容切换变量
-let scene = ref<number>(1)
+let scene = ref<number>(0)
 //收集新增的属性数据
 let attrParams = reactive<Attr>({
     attrName: '',//新增属性名字
@@ -83,7 +85,7 @@ let attrParams = reactive<Attr>({
 })
 //动态响应编辑模式和展示模式
 let flag = ref<boolean>(true)
-//动态响应ref数据
+//动态响应ref数据,数据只要发生变化就会触发
 let inputArr = ref<any>([])
 //监听仓库三级分类ID是否发生变化
 watch(() => categoryStore.c3Id, () => {
@@ -115,6 +117,13 @@ const addAttr = () => {
     })
     //切换添加与修改属性的结构
     scene.value = 1
+}
+//已有属性编辑按钮回调
+const upDataAttr = (row: Attr) => {
+    scene.value = 1
+    //将已有的属性对象赋值给attrParams对象
+    //用Es6中的方法 ->object.assign进行对象合并 浅拷贝原数组也会发生改变，所以要进行深拷贝
+    Object.assign(attrParams, JSON.parse(JSON.stringify(row)))
 }
 //取消按钮回调
 const cancel = () => {
@@ -192,6 +201,7 @@ const toEdit = (row: AttrValue, $index: number) => {
     nextTick(() => {
         inputArr.value[$index].focus()
     })
+
 }
 </script>
 
