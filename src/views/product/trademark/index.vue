@@ -26,8 +26,7 @@
                 <el-table-column label="品牌操作">
                     <template #="{ row, $index }">
                         <el-button type="primary" size="small" icon="Edit" @click="updateTrademark(row)"></el-button>
-                        <el-popconfirm :title="`您确定要删除${row.id}吗?`" width="250px" icon="Delete"
-                            @confirm="deleteTramark(row.id)">
+                        <el-popconfirm :title="`您确定要删除${row.id}吗?`" width="250px" @confirm="deleteTramark(row.id)">
                             <template #reference>
                                 <el-button type="primary" size="small" icon="Delete"></el-button>
                             </template>

@@ -18,8 +18,13 @@
                     <el-table-column label="操作" width="120px">
                         <!--row:已有的属性对象-->
                         <template #="{ row, $index }">
-                            <el-button type="primary" size="small" icon="Edit" @click="upDataAttr(row)"></el-button>
-                            <el-button type="primary" size="small" icon="Delete"></el-button>
+                            <el-button type="warning" size="small" icon="Edit" @click="upDataAttr(row)"></el-button>
+                            <el-popconfirm :title="`您确定要删除${row.attrName}吗?`" width="250px"
+                                @confirm="deleteAttr(row.id)">
+                                <template #reference>
+                                    <el-button type="danger" size="small" icon="Delete"></el-button>
+                                </template>
+                            </el-popconfirm>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -63,9 +68,9 @@
 
 <script setup lang='ts'>
 //组合式API函数watch
-import { watch, ref, reactive, nextTick } from 'vue';
+import { watch, ref, reactive, nextTick, onBeforeMount } from 'vue';
 //引入已有属性和属性值接口
-import { reqAttr, reqAddOrUpdateAttr } from '@/api/product/attr';
+import { reqAttr, reqAddOrUpdateAttr, reqDeleteAttr } from '@/api/product/attr';
 
 //获取分类仓库
 import useCategoryStore from '@/store/modules/category';
@@ -124,6 +129,25 @@ const upDataAttr = (row: Attr) => {
     //将已有的属性对象赋值给attrParams对象
     //用Es6中的方法 ->object.assign进行对象合并 浅拷贝原数组也会发生改变，所以要进行深拷贝
     Object.assign(attrParams, JSON.parse(JSON.stringify(row)))
+}
+//已有属性删除按钮
+const deleteAttr = async (attrId: number) => {
+    //发删除请求
+    let result: any = await reqDeleteAttr(attrId)
+    //删除成功
+    if (result.code == 200) {
+        ElMessage({
+            type: 'success',
+            message: '删除成功'
+        })
+        //删除成功后在获取一次已有的属性和属性值
+        getAttr();
+    } else {
+        ElMessage({
+            type: 'error',
+            message: "删除失败"
+        })
+    }
 }
 //取消按钮回调
 const cancel = () => {
@@ -201,8 +225,12 @@ const toEdit = (row: AttrValue, $index: number) => {
     nextTick(() => {
         inputArr.value[$index].focus()
     })
-
 }
+//路由组件销毁的时候，把分类相关的数据清空
+onBeforeMount(() => {
+    //清空仓库数据
+    categoryStore.$reset()
+})
 </script>
 
 <style scoped></style>

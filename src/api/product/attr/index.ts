@@ -12,7 +12,9 @@ enum API {
     //分类下属性与属性值地址
     ATTR_URL = '/admin/product/attrInfoList/',
     //添加或修改已有的属性地址
-    ADDORUPDATEATTR_URL = '/admin/product/saveAttrInfo/'
+    ADDORUPDATEATTR_URL = '/admin/product/saveAttrInfo/',
+    //删除属性地址
+    DELETEATTR_URL = '/admin/product/deleteAttr/'
 }
 //获取一级分类的接口方法
 export const reqC1 = () => request.get<any, CategoryResponseData>(API.C1_URL)
@@ -26,3 +28,5 @@ export const reqC3 = (category2Id: number | string) =>
 export const reqAttr = (category1Id: string | number, category2Id: string | number, category3Id: string | number,) => request.get<any, AttrResponseData>(API.ATTR_URL + `${category1Id}/${category2Id}/${category3Id}`)
 //获取添加或修改已有属性接口方法
 export const reqAddOrUpdateAttr = (data: Attr) => request.post<any, any>(API.ADDORUPDATEATTR_URL, data)
+//删除属性接口
+export const reqDeleteAttr = (attrId: number) => request.delete<any, any>(API.ADDORUPDATEATTR_URL + attrId)
