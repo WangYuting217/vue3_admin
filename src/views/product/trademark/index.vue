@@ -79,7 +79,7 @@ import { ref, onMounted, reactive, nextTick } from 'vue';
 import { reqAddOrUpdateTrademark, reqHasTrademark, reDeleteTrademark } from '@/api/product/trademark';
 import type { Records, TradeMarkRespinseData, TradeMark } from '@/api/product/trademark/type';
 import { ElMessage, type UploadProps } from 'element-plus'
-import { Message } from '@element-plus/icons-vue/dist/types';
+
 //当前页码
 let page = ref<number>(1)
 //每一页展示多少条数据

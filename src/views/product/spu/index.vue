@@ -2,32 +2,66 @@
     <div>
         <Category :scene="scene"></Category>
         <el-card style="margin: 10px 0px;">
-            <el-button type="primary" size="default" icon="Plus">添加SPU</el-button>
-            <el-table style="margin: 10px 0px;" border>
+            <el-button type="primary" size="default" icon="Plus"
+                :disabled="categoryStory.c3Id ? false : true">添加SPU</el-button>
+            <!--展示已有的SPU数据-->
+            <el-table style="margin: 10px 0px;" border :data="records">
                 <el-table-column label="序号" type="index" align="center" width="80px"></el-table-column>
-                <el-table-column label="SPU名称"></el-table-column>
-                <el-table-column label="SPU描述"></el-table-column>
+                <el-table-column label="SPU名称" prop="spuName"></el-table-column>
+                <el-table-column label="SPU描述" prop="description" show-overflow-tooltip></el-table-column>
                 <el-table-column label="操作">
-                    <el-button type="primary" size="small" icon="Plus"></el-button>
-                    <el-button type="primary" size="small" icon="Edite"></el-button>
-                    <el-button type="primary" size="small" icon="InfoFilled"></el-button>
-                    <el-button type="danger" size="small" icon="Delete"></el-button>
+                    <!--row为已有的sku对象-->
+                    <temple #="{ row, index }">
+                        <el-button type="primary" size="small" icon="Plus" title="添加SKU"></el-button>
+                        <el-button type="primary" size="small" icon="Edit" title="修改SKU"></el-button>
+                        <el-button type="primary" size="small" icon="InfoFilled" title="查看SKU"></el-button>
+                        <el-button type="danger" size="small" icon="Delete" title="删除SKU"></el-button>
+                    </temple>
                 </el-table-column>
             </el-table>
             <!--分页器-->
-            <el-pagination v-model:current-page="pageNo" :page-sizes="pageSize" :page-size="[3,5,7,9]" :background="true"
-                layout="prev, pager, next, jumper,->,sizes,total " :total="400"/>
+            <el-pagination v-model:current-page="pageNo" v-model:page-size="pageSize" :page-sizes="[3, 5, 7, 9]"
+                :background="true" layout="prev, pager, next, jumper,->,sizes,total " :total="total"
+                @current-change="getSpu" @size-change="changesize" />
         </el-card>
     </div>
 </template>
-
 <script setup lang='ts'>
-import { ref } from 'vue';
+import { ref, toDisplayString, watch } from 'vue';
+import useCategoryStore from '@/store/modules/category';
+import { Records, HasSpuResponseData } from '@/api/product/spu/type';
+import { reqHasSpu } from '@/api/product/spu';
 let scene = ref<number>(0)
 //分页器默认页码
 let pageNo = ref<number>(1)
 //每一页展示几条数据
-let pageSize=ref<number>(3)
+let pageSize = ref<number>(3)
+let categoryStory = useCategoryStore()
+//存储已有的Spu数据
+let records = ref<Records>([])
+//存储已有spu总个数
+let total = ref<number>(0)
+
+//监听三级分类id是否发生变化
+watch(() => categoryStory.c3Id, () => {
+    records.value = []
+    //务必有三级分类id
+    if (!categoryStory.c3Id) return;
+    getSpu()
+})
+//此方法可获得某一三级分类下的SPU
+const getSpu = async (pager = 1) => { //默认第一页
+    pageNo.value = pager
+    let result: HasSpuResponseData = await reqHasSpu(pageNo.value, pageSize.value, categoryStory.c3Id)
+    if (result.code == 200) {
+        records.value = result.data.records
+        total.value = result.data.total
+    }
+}
+//此方法为一页多少个数据发生变化时重新发请求数据
+const changesize = () => {
+    getSpu()
+}
 </script>
 
 <style scoped></style>
