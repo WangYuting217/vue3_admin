@@ -15,7 +15,8 @@
                         <!--row为已有的sku对象-->
                         <temple #="{ row, index }">
                             <el-button type="primary" size="small" icon="Plus" title="添加SKU"></el-button>
-                            <el-button @click="updateSpu" type="primary" size="small" icon="Edit" title="修改SKU"></el-button>
+                            <el-button @click="updateSpu" type="primary" size="small" icon="Edit"
+                                title="修改SPU"></el-button>
                             <el-button type="primary" size="small" icon="InfoFilled" title="查看SKU"></el-button>
                             <el-button type="danger" size="small" icon="Delete" title="删除SKU"></el-button>
                         </temple>
@@ -34,7 +35,7 @@
     </div>
 </template>
 <script setup lang='ts'>
-import { ref, toDisplayString, watch } from 'vue';
+import { ref, watch } from 'vue';
 import useCategoryStore from '@/store/modules/category';
 import { Records, HasSpuResponseData } from '@/api/product/spu/type';
 import { reqHasSpu } from '@/api/product/spu';
@@ -77,11 +78,11 @@ const addSpu = () => {
     scene.value = 1
 }
 //修改spu按钮切换场景
-const updateSpu = ()=>{
+const updateSpu = () => {
     scene.value = 1
 }
 //子组件Spuform绑定的自定义事件：目前是子组件通知父组件场景为0
-const changescene=(num:number)=>{
+const changescene = (num: number) => {
     //子组件supform点击取消按钮变为场景0，展示已有属性
     scene.value = num
 }
