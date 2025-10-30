@@ -13,13 +13,13 @@
                     <el-table-column label="SPU描述" prop="description" show-overflow-tooltip></el-table-column>
                     <el-table-column label="操作">
                         <!--row为已有的sku对象-->
-                        <temple #="{ row, index }">
+                        <template #="{ row, index }">
                             <el-button type="primary" size="small" icon="Plus" title="添加SKU"></el-button>
-                            <el-button @click="updateSpu" type="primary" size="small" icon="Edit"
+                            <el-button @click="updateSpu(row)" type="primary" size="small" icon="Edit"
                                 title="修改SPU"></el-button>
                             <el-button type="primary" size="small" icon="InfoFilled" title="查看SKU"></el-button>
                             <el-button type="danger" size="small" icon="Delete" title="删除SKU"></el-button>
-                        </temple>
+                        </template>
                     </el-table-column>
                 </el-table>
                 <!--分页器-->
@@ -28,7 +28,7 @@
                     @current-change="getSpu" @size-change="changesize" />
             </div>
             <!--添加和修改spu-->
-            <spuForm v-show="scene == 1" @changescene="changescene"></spuForm>
+            <spuForm ref="spuForm" v-show="scene == 1" @changescene="changescene"></spuForm>
             <!--添加sku-->
             <skuForm v-show="scene == 2"></skuForm>
         </el-card>
@@ -37,9 +37,9 @@
 <script setup lang='ts'>
 import { ref, watch } from 'vue';
 import useCategoryStore from '@/store/modules/category';
-import { Records, HasSpuResponseData } from '@/api/product/spu/type';
+import { Records, HasSpuResponseData, SpuData } from '@/api/product/spu/type';
 import { reqHasSpu } from '@/api/product/spu';
-import spuForm from './spuForm.vue';
+import SpuForm from './spuForm.vue';
 import skuForm from './skuForm.vue';
 //场景的数据
 let scene = ref<number>(0) //0显示已有spu,1添加和修改spu,2添加sku结构
@@ -52,7 +52,8 @@ let categoryStory = useCategoryStore()
 let records = ref<Records>([])
 //存储已有spu总个数
 let total = ref<number>(0)
-
+//获取子组件实列spuform
+let spuForm = ref<any>()
 //监听三级分类id是否发生变化
 watch(() => categoryStory.c3Id, () => {
     records.value = []
@@ -76,10 +77,13 @@ const changesize = () => {
 //点击添加spu按钮回调
 const addSpu = () => {
     scene.value = 1
+    console.log(spuForm.value)
 }
 //修改spu按钮切换场景
-const updateSpu = () => {
+const updateSpu = (row: SpuData) => {
     scene.value = 1
+    //调取子组件实列方法获取完整的已有的spu数据
+    spuForm.value.initHaSpuData(row)
 }
 //子组件Spuform绑定的自定义事件：目前是子组件通知父组件场景为0
 const changescene = (num: number) => {
