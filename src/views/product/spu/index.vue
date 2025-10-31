@@ -40,7 +40,6 @@ import useCategoryStore from '@/store/modules/category';
 import { Records, HasSpuResponseData, SpuData } from '@/api/product/spu/type';
 import { reqHasSpu } from '@/api/product/spu';
 import SpuForm from './spuForm.vue';
-import skuForm from './skuForm.vue';
 //场景的数据
 let scene = ref<number>(0) //0显示已有spu,1添加和修改spu,2添加sku结构
 //分页器默认页码
@@ -85,7 +84,7 @@ const updateSpu = (row: SpuData) => {
     //调取子组件实列方法获取完整的已有的spu数据
     spuForm.value.initHaSpuData(row)
 }
-//子组件Spuform绑定的自定义事件：目前是子组件通知父组件场景为0
+//子组件Spuform绑定的自定义事件：目的是子组件通知父组件场景为0
 const changescene = (num: number) => {
     //子组件supform点击取消按钮变为场景0，展示已有属性
     scene.value = num

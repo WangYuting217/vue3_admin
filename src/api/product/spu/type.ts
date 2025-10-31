@@ -11,8 +11,8 @@ export interface SpuData {
     description: string,
     category3Id: number | string,
     tmId: number,                   //品牌id
-    spuSaleAttrList: null,
-    spuImageList: null
+    spuSaleAttrList: null | SaleAttr[],
+    spuImageList: null | SpuImg[]
 }
 //数组：元素都是spu数据类型
 export type Records = SpuData[];
@@ -39,10 +39,10 @@ export interface AllTradeMark extends ResponseData {
 }
 //商品图片的类型
 export interface SpuImg {
-    id: number,
-    createTime: string,
-    updateTime: string,
-    spuId: number,
+    id?: number,
+    createTime?: string,
+    updateTime?: string,
+    spuId?: number,
     imgName: string,
     imgUrl: string
 }
@@ -53,22 +53,22 @@ export interface SpuHadImg extends ResponseData {
 //sku销售属性值对象类型
 export interface SaleAttrValue {
     id?: number,
-    createTime: null,
-    updateTime: null,
-    spuId: number,
+    createTime?: null,
+    updateTime?: null,
+    spuId?: number,
     baseSaleAttrId: number,
     baseSaleAttrValueName: string,
-    saleAttrName: string,
-    isChecked: null
+    saleAttrName?: string,
+    isChecked?: null
 }
 //sku销售属性值数组类型
 export type SaleAttrValueList = SaleAttrValue[]
 //sku销售属性对象
 export interface SaleAttr {
     id?: number,
-    createTime: null,
-    updateTime: null,
-    spuId: number,
+    createTime?: null,
+    updateTime?: null,
+    spuId?: number,
     baseSaleAttrId: number,
     saleAttrName: string,
     spuSaleAttrValueList: SaleAttrValueList
