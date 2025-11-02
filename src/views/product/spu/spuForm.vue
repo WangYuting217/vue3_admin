@@ -1,16 +1,16 @@
 <template>
     <el-form label-width="100px" style="max-width: 600px">
         <el-form-item label="SPU名称">
-            <el-input placeholder="请你输入SPU名称" />
+            <el-input placeholder="请你输入SPU名称" v-model="spuParams.spuName" />
         </el-form-item>
         <el-form-item label="SPU品牌">
-            <el-select placeholder="请你选择品牌" style="width:150px">
-                <el-option label="Zone one" value="shanghai" />
-                <el-option label="Zone two" value="beijing" />
+            <el-select v-model="spuParams.tmId" placeholder="请你选择品牌" style="width:150px">
+                <el-option v-for="(item, index) in AllTradeMark" :key="item.id" :label="item.tmName"
+                    :value="item.id"></el-option>
             </el-select>
         </el-form-item>
         <el-form-item label="SPU描述">
-            <el-input placeholder="请你输入描述" type="textarea" />
+            <el-input v-model="spuParams.description" placeholder="请你输入描述" type="textarea" />
         </el-form-item>
         <el-form-item label="SPU照片">
             <el-upload v-model:file-list="fileList"
@@ -50,25 +50,34 @@
 
 <script setup lang='ts'>
 import { ref } from 'vue';
-import type { SpuData } from '@/api/product/spu/type';
 import { reqAllTrademark, reqSpuImageList, reqSpuSaleArr, reqAllSaleAttr } from '@/api/product/spu/index'
-import type { HasSaleAttr, SaleAttr, SpuImg, TradeMark, AllTradeMark, SpuHadImg, SaleAttrResponseData, HasSaleAttrResponseDada } from '@/api/product/spu/type'
+import type { SpuData, HasSaleAttr, SaleAttr, SpuImg, TradeMark, AllTradeMark, SpuHadImg, SaleAttrResponseData, HasSaleAttrResponseDada } from '@/api/product/spu/type'
 let $emit = defineEmits(['changescene'])
 //点击取消按钮：通知父组件切换场景1，展示 spu属性
 const cancel = () => {
     $emit('changescene', 0)
 }
-
 //存储已有spu数据
 let AllTradeMark = ref<TradeMark[]>([])
 //商品图片
 let imgList = ref<SpuImg[]>([])
 //销售属性
 let saleAttr = ref<SaleAttr[]>([])
-//整个销售数据
+//全部销售数据
 let AllsaleAttr = ref<HasSaleAttr[]>([])
+//存储已有的spu对象
+let spuParams = ref<SpuData>({
+    category3Id: '',//收集的三级分类id
+    spuName: '',//spu名字
+    description: '',//描述
+    tmId: '',//品牌id
+    spuImageList: [],
+    spuSaleAttrList: []
+})
 //子组件发请求
 const initHaSpuData = async (spu: SpuData) => {
+    //存储已有的spu对象,将来在模板中展示
+    spuParams.value = spu
     //spu:即为父组件传递过来的已有的SPU对象[不完整]
     //获取全部品牌数据
     let result: AllTradeMark = await reqAllTrademark();

@@ -10,7 +10,7 @@ export interface SpuData {
     spuName: string,
     description: string,
     category3Id: number | string,
-    tmId: number,                   //品牌id
+    tmId: number | string,           //品牌id
     spuSaleAttrList: null | SaleAttr[],
     spuImageList: null | SpuImg[]
 }
@@ -30,7 +30,7 @@ export interface HasSpuResponseData extends ResponseData {
 //所有品牌数据的类型
 export interface TradeMark {
     id?: number,
-    spuName: string,
+    tmName: string,
     logoUrl: string
 }
 //所有品牌接口返回类型

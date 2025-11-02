@@ -11,11 +11,11 @@ enum API {
     //获取spu下销售属性sku地址
     SPUSALEATTR_URL = '/admin/product/spuSaleAttrList/',
     //获取全部销售属性数据[颜色，版本，尺码]
-    ALLSALEATTR_URL = '/admin/product/baseSaleAttrList/',
+    ALLSALEATTR_URL = '/admin/product/baseSaleAttrList',
     //追加一个新的spu
-    ADDSPU_URL = '/admin/product/saveSpuInfo/',
+    ADDSPU_URL = '/admin/product/saveSpuInfo',
     //更新已有的spu
-    UPDATESPU_URL = '/admin/product/updateSpuInfo/'
+    UPDATESPU_URL = '/admin/product/updateSpuInfo'
 }
 //获取某一个三级分类下SPU数据接口方法
 export const reqHasSpu = (page: number, limit: number, category3Id: number | string) => request.get<any, HasSpuResponseData>(API.HASSPU_URL + `${page}/${limit}/?category3Id=${category3Id}`)
