@@ -13,16 +13,20 @@
             <el-input v-model="spuParams.description" placeholder="请你输入描述" type="textarea" />
         </el-form-item>
         <el-form-item label="SPU照片">
-            <el-upload v-model:file-list="fileList"
-                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15" list-type="picture-card"
-                :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
+            <!--v-model:file-list 展示默认图片
+            action 上传图片的接口地址:图片上传路径书写/api,代理服务器
+            list-type  文件展示的样子
+            :on-preview 点击文件列表中已上传的文件时的钩子
+            :on-remove 文件列表移除文件时的钩子-->
+            <el-upload v-model:file-list="imgList" action="/api/admin/product/fileUpload/" list-type="picture-card"
+                :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :before-upload="handlerUpload">
                 <el-icon>
                     <Plus />
                 </el-icon>
             </el-upload>
 
             <el-dialog v-model="dialogVisible">
-                <img w-full :src="dialogImageUrl" alt="Preview Image" />
+                <img w-full :src="dialogImageUrl" alt="Preview Image" style="width: 100%;height: 100%;" />
             </el-dialog>
         </el-form-item>
         <el-form-item label="SPU销售属性">
@@ -52,6 +56,7 @@
 import { ref } from 'vue';
 import { reqAllTrademark, reqSpuImageList, reqSpuSaleArr, reqAllSaleAttr } from '@/api/product/spu/index'
 import type { SpuData, HasSaleAttr, SaleAttr, SpuImg, TradeMark, AllTradeMark, SpuHadImg, SaleAttrResponseData, HasSaleAttrResponseDada } from '@/api/product/spu/type'
+import { ElMessage } from 'element-plus';
 let $emit = defineEmits(['changescene'])
 //点击取消按钮：通知父组件切换场景1，展示 spu属性
 const cancel = () => {
@@ -74,6 +79,10 @@ let spuParams = ref<SpuData>({
     spuImageList: [],
     spuSaleAttrList: []
 })
+//点击图片弹出的对话框隐藏与显示控制
+let dialogVisible = ref<boolean>(false)
+//存储图片预览地址
+let dialogImageUrl = ref<string>('')
 //子组件发请求
 const initHaSpuData = async (spu: SpuData) => {
     //存储已有的spu对象,将来在模板中展示
@@ -89,9 +98,45 @@ const initHaSpuData = async (spu: SpuData) => {
     let result3: HasSaleAttrResponseDada = await reqAllSaleAttr();
     //存储全部品牌,图片，销售属性的数据
     AllTradeMark.value = result.data
-    imgList.value = result1.data
+    imgList.value = result1.data.map(item => {
+        return {
+            name: item.imgName,
+            url: item.imgUrl
+        }
+    })
     saleAttr.value = result2.data
     AllsaleAttr.value = result3.data
+}
+//点击照片墙预览时触发的钩子
+const handlePictureCardPreview = (file: any) => {
+    //对话框弹出
+    dialogVisible.value = true
+    //照片地址赋值
+    dialogImageUrl.value = file.url
+}
+//点击照片墙文件移除时触发的钩子
+const handleRemove = () => {
+
+}
+//上传图片之前触发的钩子约束文件大小和类型
+const handlerUpload = (file: any) => {
+    if (file.type == 'image/png' || file.type == 'image/jpeg' || file.type == 'image/gif') {
+        if (file.size / 1024 / 1024 < 3) {
+            return true
+        } else {
+            ElMessage({
+                type: 'error',
+                message: '上传的文件务必小于3兆'
+            })
+            return false;
+        }
+    } else {
+        ElMessage({
+            type: 'error',
+            message: '上传文件务必使PNG|JPG|GIF'
+        });
+
+    }
 }
 //对外暴露
 defineExpose({ initHaSpuData })
