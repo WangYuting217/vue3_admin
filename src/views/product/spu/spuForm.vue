@@ -24,7 +24,6 @@
                     <Plus />
                 </el-icon>
             </el-upload>
-
             <el-dialog v-model="dialogVisible">
                 <img w-full :src="dialogImageUrl" alt="Preview Image" style="width: 100%;height: 100%;" />
             </el-dialog>
@@ -36,12 +35,24 @@
             </el-select>
             <el-button style="margin-left:10px;" type="primary" size="default" icon="plus">添加销售属性</el-button>
             <!--table展示销售属性与属性值-->
-            <el-table border style="margin:10px 0px">
+            <el-table border style="margin:10px 0px" :data="saleAttr">
                 <el-table-column label="序号" type="index" align="center" width="80px"></el-table-column>
-                <el-table-column label="属性名" width="120px"></el-table-column>
-                <el-table-column label="属性值"></el-table-column>
+                <el-table-column label="销售属性名" width="120px" prop="saleAttrName"></el-table-column>
+                <el-table-column label="销售属性值">
+                    <!--row当前spu已有的销售属性对象-->
+                    <template #="{ row, $index }">
+                        <el-tag style="margin: 0px 5px;" v-for="(item, index) in row.spuSaleAttrValueList" :key="row.id"
+                            closable>
+                            {{ item.saleAttrValueName }}
+                        </el-tag>
+                        <el-button type="primary" size="small" icon="plus"></el-button>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作" width="120px">
-                    <el-button type="danger" size="default" icon="Delete"></el-button>
+                    <template #="{ row, index }">
+                        <el-button type="danger" size="small" icon="Delete"
+                            @click="saleAttr.splice(index, 1)"></el-button>
+                    </template>
                 </el-table-column>
             </el-table>
         </el-form-item>

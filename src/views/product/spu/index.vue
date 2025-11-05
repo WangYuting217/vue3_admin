@@ -28,7 +28,7 @@
                     @current-change="getSpu" @size-change="changesize" />
             </div>
             <!--添加和修改spu-->
-            <spuForm ref="spuForm" v-show="scene == 1" @changescene="changescene"></spuForm>
+            <spuForm ref="spuform" v-show="scene == 1" @changescene="changescene"></spuForm>
             <!--添加sku-->
             <skuForm v-show="scene == 2"></skuForm>
         </el-card>
@@ -52,7 +52,7 @@ let records = ref<Records>([])
 //存储已有spu总个数
 let total = ref<number>(0)
 //获取子组件实列spuform
-let spuForm = ref<any>()
+let spuform = ref<any>()
 //监听三级分类id是否发生变化
 watch(() => categoryStory.c3Id, () => {
     records.value = []
@@ -82,7 +82,7 @@ const addSpu = () => {
 const updateSpu = (row: SpuData) => {
     scene.value = 1
     //调取子组件实列方法获取完整的已有的spu数据
-    spuForm.value.initHaSpuData(row)
+    spuform.value.initHaSpuData(row)
 }
 //子组件Spuform绑定的自定义事件：目的是子组件通知父组件场景为0
 const changescene = (num: number) => {
