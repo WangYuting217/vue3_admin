@@ -30,10 +30,14 @@
         </el-form-item>
         <el-form-item label="SPU销售属性">
             <!--销售属性下拉菜单-->
-            <el-select placeholder="还有3为选择" style="width:150px">
-                <el-option label="Zone one" value="shanghai" />
+            <el-select v-model="saleAttrIdAndName" :placeholder="unSelectSaleAttr ? `还未选择${unSelectSaleAttr}个` : '无'"
+                style="width:150px">
+                <!--收集未选择的销售属性id和名字，用:进行分开-->
+                <el-option :value="`${item.id}:${item.name}`" v-for="(item, index) in unSelectSaleAttr" :key="item.id"
+                    label="item.name" />
             </el-select>
-            <el-button style="margin-left:10px;" type="primary" size="default" icon="plus">添加销售属性</el-button>
+            <el-button @click="addSaleAttr" :disabled="saleAttrIdAndName ? false : true" style="margin-left:10px;"
+                type="primary" size="default" icon="plus">添加销售属性</el-button>
             <!--table展示销售属性与属性值-->
             <el-table border style="margin:10px 0px" :data="saleAttr">
                 <el-table-column label="序号" type="index" align="center" width="80px"></el-table-column>
@@ -49,7 +53,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="120px">
-                    <template #="{ row, index }">
+                    <template #="{ row, index }">*
                         <el-button type="danger" size="small" icon="Delete"
                             @click="saleAttr.splice(index, 1)"></el-button>
                     </template>
@@ -64,7 +68,7 @@
 </template>
 
 <script setup lang='ts'>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { reqAllTrademark, reqSpuImageList, reqSpuSaleArr, reqAllSaleAttr } from '@/api/product/spu/index'
 import type { SpuData, HasSaleAttr, SaleAttr, SpuImg, TradeMark, AllTradeMark, SpuHadImg, SaleAttrResponseData, HasSaleAttrResponseDada } from '@/api/product/spu/type'
 import { ElMessage } from 'element-plus';
@@ -90,6 +94,8 @@ let spuParams = ref<SpuData>({
     spuImageList: [],
     spuSaleAttrList: []
 })
+//收集还未选择的销售属性id与名字
+let saleAttrIdAndName = ref<string>('')
 //点击图片弹出的对话框隐藏与显示控制
 let dialogVisible = ref<boolean>(false)
 //存储图片预览地址
@@ -148,6 +154,29 @@ const handlerUpload = (file: any) => {
         });
 
     }
+}
+//计算当前spu还未拥有的销售属性
+let unSelectSaleAttr = computed(() => {
+    //全部销售属性：颜色，版本，尺码
+    //已有销售属性：颜色，版本
+    let unSelectAttr = AllsaleAttr.value.filter(item => {
+        return saleAttr.value.every(item1 => {
+            return item.name != item1.saleAttrName
+        })
+    })
+    return unSelectAttr
+})
+//添加销售属性按钮
+const addSaleAttr = () => {
+    const [baseSaleAttrId, saleAttrName] = saleAttrIdAndName.value.split(':')
+    //准备新的销售属性对象带给服务器
+    let newSaleAttr: SaleAttr = {
+        baseSaleAttrId,
+        saleAttrName,
+        spuSaleAttrValueList: []
+    }
+    //追加到数组当中
+    saleAttr.value.push(newSaleAttr)
 }
 //对外暴露
 defineExpose({ initHaSpuData })
