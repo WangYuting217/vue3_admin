@@ -76,7 +76,6 @@ const changesize = () => {
 //点击添加spu按钮回调
 const addSpu = () => {
     scene.value = 1
-    console.log(spuForm.value)
 }
 //修改spu按钮切换场景
 const updateSpu = (row: SpuData) => {
@@ -88,6 +87,8 @@ const updateSpu = (row: SpuData) => {
 const changescene = (num: number) => {
     //子组件supform点击取消按钮变为场景0，展示已有属性
     scene.value = num
+    //保存成功调转页面0，再次获取全部的已有的spu
+    getSpu()
 }
 
 </script>

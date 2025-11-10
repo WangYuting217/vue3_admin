@@ -50,7 +50,7 @@
                             {{ item.saleAttrValueName }}
                         </el-tag>
                         <el-input v-model="row.saleAttrValue" v-if="row.flag == true" @blur="toLook(row)"
-                            placeholder="请输入"></el-input>
+                            placeholder="请输入" style="width:100px"></el-input>
                         <el-button v-else @click="toEdit(row)" type="primary" size="small" icon="plus"></el-button>
                     </template>
                 </el-table-column>
@@ -63,7 +63,8 @@
             </el-table>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" size="default">保存</el-button>
+            <el-button :disabled="saleAttr.length > 0 ? false : true" type="primary" size="default"
+                @click="save">保存</el-button>
             <el-button type="primary" size="default" @click="cancel">取消</el-button>
         </el-form-item>
     </el-form>
@@ -71,7 +72,7 @@
 
 <script setup lang='ts'>
 import { ref, computed } from 'vue';
-import { reqAllTrademark, reqSpuImageList, reqSpuSaleArr, reqAllSaleAttr } from '@/api/product/spu/index'
+import { reqAllTrademark, reqSpuImageList, reqSpuSaleArr, reqAllSaleAttr, reqAddSpuOrUpdataSpu } from '@/api/product/spu/index'
 import type { SpuData, HasSaleAttr, SaleAttr, SpuImg, TradeMark, AllTradeMark, SpuHadImg, SaleAttrResponseData, HasSaleAttrResponseDada, SaleAttrValue } from '@/api/product/spu/type'
 import { ElMessage } from 'element-plus';
 let $emit = defineEmits(['changescene'])
@@ -219,6 +220,34 @@ const toLook = (row: SaleAttr) => {
     }
     //追加新的属性值对象
     row.spuSaleAttrValueList.push(newSaleAttrValue)
+}
+//保存按钮回调
+const save = async () => {
+    //整理参数
+    //1.整理图片数据
+    spuParams.value.spuImageList = imgList.value.map((item: any) => {
+        return {
+            imgName: item.name,//图片的名字
+            imgUrl: (item.response && item.response.data) || item.url
+        }
+    })
+    //2.整理销售数据
+    spuParams.value.spuSaleAttrList = saleAttr.value
+    //发请求:添加SPU|更新已有的SPU
+    let result = await reqAddSpuOrUpdataSpu(spuParams.value)
+    if (result.code == 200) {
+        ElMessage({
+            type: 'success',
+            message: spuParams.value.id ? '更新成功' : '添加成功'
+        })
+        //成功通知父亲切换场景为0
+        $emit('changescene', 0)
+    } else {
+        ElMessage({
+            type: 'error',
+            message: spuParams.value.id ? '更新失败' : '添加失败'
+        })
+    }
 }
 //对外暴露
 defineExpose({ initHaSpuData })

@@ -182,7 +182,7 @@ const save = async () => {
     } else {
         ElMessage({
             type: 'error',
-            message: attrParams.id ? '修改失败' : '添加成功'
+			message: attrParams.id ? '修改失败' : '添加失败'
         })
     }
 }
