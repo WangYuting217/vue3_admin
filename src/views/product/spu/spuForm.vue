@@ -5,7 +5,7 @@
         </el-form-item>
         <el-form-item label="SPU品牌">
             <el-select v-model="spuParams.tmId" placeholder="请你选择品牌" style="width:150px">
-                <el-option v-for="(item, index) in AllTradeMark" :key="item.id" :label="item.tmName"
+                <el-option v-for="(item, index) in allTradeMark" :key="item.id" :label="item.tmName"
                     :value="item.id"></el-option>
             </el-select>
         </el-form-item>
@@ -78,10 +78,10 @@ import { ElMessage } from 'element-plus';
 let $emit = defineEmits(['changescene'])
 //点击取消按钮：通知父组件切换场景1，展示 spu属性
 const cancel = () => {
-    $emit('changescene', 0)
+    $emit('changescene', { flag: 0, params: 'update' })
 }
 //存储已有spu数据
-let AllTradeMark = ref<TradeMark[]>([])
+let allTradeMark = ref<TradeMark[]>([])
 //商品图片
 let imgList = ref<SpuImg[]>([])
 //以显示的销售属性
@@ -114,10 +114,10 @@ const initHaSpuData = async (spu: SpuData) => {
     let result1: SpuHadImg = await reqSpuImageList((spu.id as number));
     //获取已有的销售数据
     let result2: SaleAttrResponseData = await reqSpuSaleArr((spu.id as number));
-    //获取整个销售数据
+    //获取整个销售属性数据
     let result3: HasSaleAttrResponseDada = await reqAllSaleAttr();
     //存储全部品牌,图片，销售属性的数据
-    AllTradeMark.value = result.data
+    allTradeMark.value = result.data
     imgList.value = result1.data.map(item => {
         return {
             name: item.imgName,
@@ -241,7 +241,7 @@ const save = async () => {
             message: spuParams.value.id ? '更新成功' : '添加成功'
         })
         //成功通知父亲切换场景为0
-        $emit('changescene', 0)
+        $emit('changescene', { flag: 0, params: spuParams.value.id ? 'update' : 'add' })
     } else {
         ElMessage({
             type: 'error',
@@ -249,8 +249,34 @@ const save = async () => {
         })
     }
 }
+//添加一个新的spu,初始化请求方法
+const initAddSpu = async (c3Id: number | string) => {
+    //清空数据   object.assign复制
+    Object.assign(spuParams.value, {
+        category3Id: '',//收集的三级分类id
+        spuName: '',//spu名字
+        description: '',//描述
+        tmId: '',//品牌id
+        spuImageList: [],
+        spuSaleAttrList: []
+    })
+    //清空照片墙
+    imgList.value = []
+    //清空销售属性
+    saleAttr.value = []
+    saleAttrIdAndName.value = ''
+    //存储三级分类id
+    spuParams.value.category3Id = c3Id
+    //全部品牌数据
+    let result: AllTradeMark = await reqAllTrademark();
+    //销售属性数据
+    let result1: HasSaleAttrResponseDada = await reqAllSaleAttr();
+    //存储数据
+    allTradeMark.value = result.data
+    AllsaleAttr.value = result1.data
+}
 //对外暴露
-defineExpose({ initHaSpuData })
+defineExpose({ initHaSpuData, initAddSpu })
 </script>
 
 <style scoped></style>

@@ -105,8 +105,6 @@ const getAttr = async () => {
     //获取分类ID
     const { c1Id, c2Id, c3Id } = categoryStore
     let result: AttrResponseData = await reqAttr(c1Id, c2Id, c3Id)
-    //获取已有的属性和属性值
-    await reqAttr(c1Id, c2Id, c3Id)
     if (result.code == 200) {
         attrArr.value = result.data
     }
