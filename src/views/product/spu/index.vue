@@ -15,7 +15,7 @@
                         <!--row为已有的sku对象-->
                         <template #="{ row, index }">
                             <el-button type="primary" size="small" icon="Plus" title="添加SKU"
-                                @click="addSku"></el-button>
+                                @click="addSku(row)"></el-button>
                             <el-button @click="updateSpu(row)" type="primary" size="small" icon="Edit"
                                 title="修改SPU"></el-button>
                             <el-button type="primary" size="small" icon="InfoFilled" title="查看SKU"></el-button>
@@ -40,7 +40,7 @@ import { ref, watch } from 'vue';
 import useCategoryStore from '@/store/modules/category';
 import { Records, HasSpuResponseData, SpuData } from '@/api/product/spu/type';
 import { reqHasSpu } from '@/api/product/spu';
-import SpuForm from './spuForm.vue';
+import spuForm from './spuForm.vue';
 import skuForm from './skuForm.vue';
 //场景的数据
 let scene = ref<number>(0) //0显示已有spu,1添加和修改spu,2添加sku结构
@@ -104,9 +104,11 @@ const changescene = (obj: any) => {
     }
 }
 //点击添加sku按钮回调
-const addSku = () => {
+const addSku = (row: SpuData) => {
     //点击添加sku回调按钮，切换场景2
     scene.value = 2
+    //点击添加sku，调用子组件方法初始化数据
+    skuform.value.initAddsku(categoryStory.c1Id, categoryStory.c2Id, row)
 }
 </script>
 

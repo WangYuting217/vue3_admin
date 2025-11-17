@@ -15,52 +15,37 @@
         </el-form-item>
         <el-form-item label="平台属性">
             <!--inline=true 竖着排列变为横向排列-->
-            <el-form :inline="true">
-                <el-form-item label="手机一级">
-                    <el-select placeholder="请选择" style="width: 150px;">
-                        <el-option></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="电池容量">
-                    <el-select placeholder="请选择" style="width: 150px;">
-                        <el-option></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="运行内存">
-                    <el-select placeholder="请选择" style="width: 150px;">
-                        <el-option></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="机身内存">
-                    <el-select placeholder="请选择" style="width: 150px;">
-                        <el-option></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="CPU型号">
-                    <el-select placeholder="请选择" style="width: 150px;">
-                        <el-option></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="屏幕尺寸">
-                    <el-select placeholder="请选择" style="width: 150px;">
-                        <el-option></el-option>
+            <el-form :inline="true" label-width="75px">
+                <el-form-item v-for="(item, index) in attrArr" :key="item.id" :label="item.attrName">
+                    <el-select style="width: 130px;">
+                        <el-option v-for="(attrValue, index) in item.attrValueList" :key="attrValue.id"
+                            :label="attrValue.valueName" placeholder="请选择"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
         </el-form-item>
         <el-form-item label="销售属性">
-            <el-form-item label="颜色">
-                <el-select placeholder="请选择" style="width: 150px;">
-                    <el-option></el-option>
+            <el-form-item v-for="(item, index) in saleAttr" :key="item.id" :label="item.saleAttrName">
+                <el-select placeholder="请选择" style="width: 130px;">
+                    <el-option v-for="(saleAttrValue, index) in item.spuSaleAttrValueList" :key="saleAttrValue.id"
+                        :label="saleAttrValue.saleAttrValueName"></el-option>
                 </el-select>
             </el-form-item>
         </el-form-item>
         <el-form-item label="图片名称">
-            <el-table border>
+            <el-table border :data="image">
                 <el-table-column type="selection" width="80px" align="center"></el-table-column>
-                <el-table-column label="图片"></el-table-column>
-                <el-table-column label="名称"></el-table-column>
-                <el-table-column label="操作"></el-table-column>
+                <el-table-column label="图片">
+                    <template #="{ row, $index }">
+                        <el-image :src="row.imgUrl"></el-image>
+                    </template>
+                </el-table-column>
+                <el-table-column label="名称" prop="imgName"></el-table-column>
+                <el-table-column label="操作">
+                    <template #="{ row, $index }">
+                        <el-button type="primary" size="small">设置默认</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </el-form-item>
         <el-form-item>
@@ -71,11 +56,36 @@
 </template>
 
 <script setup lang='ts'>
+//引入请求API
+import { reqAttr } from '@/api/product/attr/index'
+import { reqSpuImageList, reqSpuSaleArr } from '@/api/product/spu/index'
+import { ref } from 'vue';
+//自定义事件的方法
 let $emit = defineEmits(['changescene'])
+//创建空数组用于存储数据：平台属性  照片墙   销售属性数据
+let attrArr = ref<any>([])
+let image = ref<any>([])
+let saleAttr = ref<any>([])
 //点击取消按钮回调
 const cancel = () => {
     $emit('changescene', { flag: 0, params: '' })
 }
+//添加一个新的sku,初始化请求方法
+const initAddsku = async (c1Id: number | string, c2Id: number | string, spu: any) => {
+    //获取平台属性数据
+    let result: any = await reqAttr(c1Id, c2Id, spu.category3Id)
+    //获取照片墙数据
+    let result1: any = await reqSpuImageList(spu.id)
+    //获取对应的销售属性数据
+    let result2: any = await reqSpuSaleArr(spu.id)
+    //存储数据：平台属性  照片墙   销售属性数据
+    attrArr.value = result.data
+    image.value = result1.data
+    saleAttr.value = result2.data
+    console.log(result2)
+}
+//对外暴露
+defineExpose({ initAddsku })
 </script>
 
 <style scoped></style>
