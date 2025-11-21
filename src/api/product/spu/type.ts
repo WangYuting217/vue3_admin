@@ -90,3 +90,26 @@ export interface HasSaleAttr {
 export interface HasSaleAttrResponseDada extends ResponseData {
     data: HasSaleAttr[]
 }
+
+
+export interface Attr {
+    attrId: number | string,
+    valueId: number | string
+}
+export interface saleAttr {
+    saleAttrId: number | string,
+    saleAttrValueId: number | string
+}
+//添加sku的数据类型
+export interface SkuData {
+    category3Id: string | number,
+    spuId: string | number,
+    tmId: string | number,
+    skuName: string,
+    price: string | number,
+    weight: string | number,
+    skuDesc: string,
+    skuAttrValueList?: Attr[],
+    skuSaleAttrValueList?: saleAttr[],
+    skuDefaultImg: string
+}
