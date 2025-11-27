@@ -22,7 +22,9 @@ export interface SkuData {
     skuDesc: string,
     skuAttrValueList?: Attr[],
     skuSaleAttrValueList?: saleAttr[],
-    skuDefaultImg: string
+    skuDefaultImg: string,
+    isSale?: number,//控制商品上架还是下架
+    id?: number
 }
 //获取sku接口返回数据的ts类型
 export interface SkuResponseData extends ResponseData {
