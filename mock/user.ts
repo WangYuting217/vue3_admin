@@ -1,4 +1,4 @@
-//用户信息数据
+//createUserList:次函数执行会返回一个数组,数组里面包含两个用户信息
 function createUserList() {
     return [
         {
@@ -27,10 +27,9 @@ function createUserList() {
         },
     ]
 }
-
-//对外暴露一个数组，数组里面包含两个接口
+//对外暴露一个数组:数组里面包含两个接口
 //登录假的接口
-//获取用户信息的假接口
+//获取用户信息的假的接口
 export default [
     // 用户登录接口
     {
@@ -65,18 +64,8 @@ export default [
             if (!checkUser) {
                 return { code: 201, data: { message: '获取用户信息失败' } }
             }
-            //如果有返回成功信息（扁平化返回结构以匹配类型）
-            const { routes, buttons, roles, username, avatar } = checkUser
-            return { code: 200, data: { routes, buttons, roles, name: username, avatar } }
+            //如果有返回成功信息
+            return { code: 200, data: { checkUser } }
         },
     },
-    // 退出登录
-    {
-        url: '/api/user/logout',
-        method: 'post',
-        response: () => {
-            return { code: 200, data: { message: 'ok' } }
-        },
-    },
-    
 ]

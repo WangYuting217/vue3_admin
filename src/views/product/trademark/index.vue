@@ -54,9 +54,9 @@
                     <el-input placeholder="请您输入品牌名称" v-model="trademarkParams.tmName"></el-input>
                 </el-form-item>
                 <el-form-item label="品牌LOGO" label-width="100px" prop="logoUrl">
-                    <!--upload组件属性：action图片上传路径书写/api,代理服务器 -->
-                    <el-upload class="avatar-uploader" action="/api/admin/product/fileUpload" :show-file-list="false"
-                        :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                    <!--upload组件属性：action图片上传路径使用环境变量前缀，避免 404 -->
+                    <el-upload class="avatar-uploader" :action="uploadAction" :headers="uploadHeaders"
+                        :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
                         <img v-if="trademarkParams.logoUrl" :src="trademarkParams.logoUrl" class="avatar" />
                         <el-icon v-else class="avatar-uploader-icon">
                             <Plus />
@@ -79,7 +79,9 @@ import { ref, onMounted, reactive, nextTick } from 'vue';
 import { reqAddOrUpdateTrademark, reqHasTrademark, reDeleteTrademark } from '@/api/product/trademark';
 import type { Records, TradeMarkRespinseData, TradeMark } from '@/api/product/trademark/type';
 import { ElMessage, type UploadProps } from 'element-plus'
-
+import useUserStore from '@/store/modules/user'
+// 上传地址：使用环境变量前缀，避免写死 /api 导致 404
+const uploadAction = `${import.meta.env.VITE_APP_BASE_API || '/api'}/admin/product/fileUpload`
 //当前页码
 let page = ref<number>(1)
 //每一页展示多少条数据
@@ -189,7 +191,11 @@ const confirm = async () => {
         })
     }
 }
-
+//
+const userStore = useUserStore()
+const uploadHeaders = {
+    token: userStore.token,
+}
 //上传图片组件->上传图片之前触发的钩子函数
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
     //钩子在图片上传之前触发,上传文件之前约束文件类型与大小
@@ -262,7 +268,7 @@ const deleteTramark = async (id: number) => {
             type: 'success',
             message: '删除成功'
         })
-        getHasTrademark(trademarkArr.value.length > 2 ? page.value : page.value - 1)
+        getHasTrademark(trademarkArr.value.length > 1 ? page.value : page.value - 1)
     } else {
         ElMessage({
             type: 'error',

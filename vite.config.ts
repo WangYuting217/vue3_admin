@@ -17,6 +17,7 @@ export default defineConfig(({ command, mode }) => {
     }),
     viteMockServe({
       enable: command === 'serve',//保证开发阶段可以使用mock接口
+      mockPath: 'mock',//指定mock文件夹路径
     })
     ],
     resolve: {

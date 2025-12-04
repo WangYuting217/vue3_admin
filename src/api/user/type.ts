@@ -14,7 +14,8 @@ export interface ResponseData {
 
 //定义登录接口返回数据类型      extends继承
 export interface loginResponseData extends ResponseData {
-    data: { token: string },
+    // 后端实际返回的是一个字符串形式的 token
+    data: string,
 }
 
 //定义获取用户信息返回数据类型

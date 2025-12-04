@@ -61,7 +61,7 @@
 <script setup lang='ts'>
 //引入请求API
 import { reqAttr } from '@/api/product/attr/index'
-import { reqAddSku, reqSpuImageList, reqSpuSaleArr } from '@/api/product/spu/index'
+import { reqAddSku, reqSpuImageList, reqSpuHasSaleAttr } from '@/api/product/spu/index'
 import { SkuData } from '@/api/product/spu/type';
 import { ElMessage } from 'element-plus';
 import { reactive, ref } from 'vue';
@@ -105,7 +105,7 @@ const initAddsku = async (c1Id: number | string, c2Id: number | string, spu: any
     //获取照片墙数据
     let result1: any = await reqSpuImageList(spu.id)
     //获取对应的销售属性数据
-    let result2: any = await reqSpuSaleArr(spu.id)
+    let result2: any = await reqSpuHasSaleAttr(spu.id)
     //存储数据：平台属性  照片墙   销售属性数据
     attrArr.value = result.data
     image.value = result1.data

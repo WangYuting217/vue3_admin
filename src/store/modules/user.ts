@@ -14,7 +14,7 @@ const useUserStore = defineStore('User', {
     state: (): UserState => {
         return {
             token: GET_TOKEN(),//用户唯一标识token
-            menuRoutes: constantRoute,//仓库存储生成菜单需要的数组(路由)
+            menuRoutes: constantRoute as [],//仓库存储生成菜单需要的数组(路由)
             username: '',
             avatar: '',
         }
@@ -25,14 +25,13 @@ const useUserStore = defineStore('User', {
         async userLogin(data: loginFormData) {
             //登录请求
             const result: loginResponseData = await reqLogin(data)
-            //登录请求:成功200->token
-            //登录请求:失败201->登录失败错误的信息
+            //登录请求:成功200->token; 失败则抛出错误
             if (result.code == 200) {
                 //pinia仓库存储一下token
                 //由于pinia|vuex存储数据其实利用js对象
-                this.token = result.data.token
+                this.token = result.data
                 //本地存储持久化存储一份
-                SET_TOKEN(result.data.token)
+                SET_TOKEN(result.data)
                 //能保证当前async函数返回一个成功的promise
                 return 'ok'
             } else {
